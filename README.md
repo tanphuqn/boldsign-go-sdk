@@ -12,7 +12,7 @@ https://www.boldsign.com/help/api/general/preparing-your-application/
 Note that you need to include the **v** in the version tag.
 
 ```
-$ go get github.com/tanphuqn/boldsign@v0.1.0
+$ go get github.com/tanphuqn/boldsign-go-sdk@v1.0.0
 ```
 
 
@@ -53,6 +53,6 @@ $ go test
 ## Tagging
 
 ```
-$ git tag v0.1.0
+$ git tag v1.0.0
 $ git push origin --tags
 ```
