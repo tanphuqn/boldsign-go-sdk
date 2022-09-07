@@ -67,6 +67,7 @@ func (m *Client) get(path string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 
 	return response, err
 }
@@ -77,14 +78,11 @@ func (m *Client) post(path string, params *bytes.Buffer, w multipart.Writer) (*h
 
 func (m *Client) request(method string, path string, params *bytes.Buffer, w multipart.Writer) (*http.Response, error) {
 	token, err := m.GetToken()
-	fmt.Println(token)
 	if err != nil {
 		return nil, err
 	}
 	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(), path)
 	request, _ := http.NewRequest(method, endpoint, params)
-	fmt.Println(endpoint)
-	fmt.Println(w.FormDataContentType())
 	request.Header.Set("Content-Type", w.FormDataContentType())
 	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	response, err := m.getHTTPClient().Do(request)
@@ -92,96 +90,26 @@ func (m *Client) request(method string, path string, params *bytes.Buffer, w mul
 		fmt.Println(err.Error())
 		return nil, err
 	}
-	fmt.Println(response.StatusCode)
 	defer response.Body.Close()
 
-	resBody, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-	var data map[string]interface{}
-	if err := json.Unmarshal(resBody, &data); err != nil {
-		return nil, err
-	}
-	fmt.Println(data)
-
-	// if response.StatusCode >= 400 {
-	// 	msg := fmt.Sprintf("boldsign request failed with status %d", response.StatusCode)
-	// 	body, _ := ioutil.ReadAll(response.Body)
-	// 	var data map[string]interface{}
-	// 	if err := json.Unmarshal(body, &data); err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	fmt.Println(data)
-	// 	e := &model.ErrorResponse{}
-	// 	json.NewDecoder(response.Body).Decode(e)
-	// 	if e.Error != nil {
-	// 		fmt.Println(err.Error())
-	// 		msg = fmt.Sprintf("%s: %s", e.Error.Name, e.Error.Message)
-	// 	} else {
-	// 		messages := []string{}
-	// 		for _, w := range e.Warnings {
-	// 			messages = append(messages, fmt.Sprintf("%s: %s", w.Name, w.Message))
-	// 		}
-	// 		msg = strings.Join(messages, ", ")
-	// 	}
-	// 	fmt.Println(1)
-	// 	fmt.Println(msg)
-	// 	return response, errors.New(msg)
-	// }
-	// fmt.Println(2)
-	return response, err
-}
-
-func (m *Client) nakedGet(path string) (*http.Response, error) {
-	token, err := m.GetToken()
-	if err != nil {
-		return nil, err
-	}
-	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(), path)
-	var b bytes.Buffer
-	request, _ := http.NewRequest(http.MethodGet, endpoint, &b)
-	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
-	response, err := m.getHTTPClient().Do(request)
-	if err != nil {
-		return nil, err
-	}
-
 	if response.StatusCode >= 400 {
+		// // read response body
+		// body, error := ioutil.ReadAll(response.Body)
+		// if error != nil {
+		// 	fmt.Println(error)
+		// }
+		// // close response body
+		// response.Body.Close()
+		// // print response body
+		// fmt.Println(string(body))
+
 		msg := fmt.Sprintf("boldsign request failed with status %d", response.StatusCode)
 		e := &model.ErrorResponse{}
 		json.NewDecoder(response.Body).Decode(e)
-		if e.Error != nil {
-			msg = fmt.Sprintf("%s: %s", e.Error.Name, e.Error.Message)
-		} else {
-			messages := []string{}
-			for _, w := range e.Warnings {
-				messages = append(messages, fmt.Sprintf("%s: %s", w.Name, w.Message))
-			}
-			msg = strings.Join(messages, ", ")
-		}
-
+		msg = msg + "," + fmt.Sprintf("%s: %s", e.Message, e.ErrorContent)
 		return response, errors.New(msg)
 	}
 
-	return response, err
-}
-
-func (m *Client) nakedPost(path string) (*http.Response, error) {
-	token, err := m.GetToken()
-	if err != nil {
-		return nil, err
-	}
-	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(), path)
-	var b bytes.Buffer
-	request, _ := http.NewRequest(http.MethodPost, endpoint, &b)
-	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
-
-	response, err := m.getHTTPClient().Do(request)
-	if err != nil {
-		return nil, err
-	}
 	return response, err
 }
 

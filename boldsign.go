@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"reflect"
+	"strconv"
 
 	"github.com/tanphuqn/boldsign-go-sdk/model"
 )
@@ -44,19 +44,38 @@ type Client struct {
 
 // CreateEmbeddedRequestUrl creates a new embedded signature with template id
 func (m *Client) CreateEmbeddedRequestUrl(req model.EmbeddedDocumentRequest) (*model.EmbeddedSendCreated, error) {
-	params, writer, err := m.marshalMultipartEmbeddedSignatureRequest(req)
+	bodyBuf, bodyWriter, err := m.marshalMultipartEmbeddedSignatureRequest(req)
 	if err != nil {
 		fmt.Println("marshalMultipartEmbeddedSignatureRequest Error:", err.Error())
 		return nil, err
 	}
 
-	response, err := m.post("document/createEmbeddedRequestUrl", params, *writer)
+	response, err := m.post("document/createEmbeddedRequestUrl", bodyBuf, *bodyWriter)
 	if err != nil {
-		fmt.Println("post Error:", err.Error())
 		return nil, err
 	}
 
-	return m.parseSignatureRequestResponse(response)
+	data := &model.EmbeddedSendCreated{}
+	err = json.NewDecoder(response.Body).Decode(data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+
+}
+
+func (m *Client) GetProperties(documentId string) (*model.DocumentProperties, error) {
+	path := fmt.Sprintf("https://api-eu.boldsign.com/v1/document/properties?documentId=%s", documentId)
+	response, err := m.get(path)
+	if err != nil {
+		return nil, err
+	}
+	data := &model.DocumentProperties{}
+	err = json.NewDecoder(response.Body).Decode(data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.EmbeddedDocumentRequest) (*bytes.Buffer, *multipart.Writer, error) {
@@ -76,67 +95,59 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 			switch fieldTag {
 			case SignersKey:
 				for i, signer := range embRequest.GetSigners() {
-					err := bodyWriter.WriteField(fmt.Sprintf("%s[%v][EmailAddress]", SignersKey, i), signer.GetEmailAddress())
+					formField, err := bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][EmailAddress]", SignersKey, i))
 					if err != nil {
 						return nil, nil, err
 					}
-					fmt.Println(fmt.Sprintf("%s[%v][EmailAddress]", SignersKey, i), "=", signer.GetEmailAddress())
+					formField.Write([]byte(signer.GetEmailAddress()))
 
-					err = bodyWriter.WriteField(fmt.Sprintf("%s[%v][Name]", SignersKey, i), signer.GetName())
+					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][Name]", SignersKey, i))
 					if err != nil {
 						return nil, nil, err
 					}
-					fmt.Println(fmt.Sprintf("%s[%v][Name]", SignersKey, i), "=", signer.GetName())
+					formField.Write([]byte(signer.GetName()))
+					// fmt.Println(fmt.Sprintf("%s[%v][Name]", SignersKey, i), "=", signer.GetName())
+
+					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][SignerOrder]", SignersKey, i))
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(strconv.Itoa(signer.GetSignerOrder())))
+
+					// fmt.Println(fmt.Sprintf("%s[%v][SignerOrder]", SignersKey, i), "=", signer.GetSignerOrder())
 				}
 			case FileKey:
 				for _, path := range embRequest.GetFiles() {
-					file, _ := os.Open(path.FilePath)
-
+					file, _ := os.Open(path)
 					formField, err := bodyWriter.CreateFormFile("Files", file.Name())
-
 					if err != nil {
 						return nil, nil, err
 					}
 					_, err = io.Copy(formField, file)
-					fmt.Println("file=", file.Name())
+					// fmt.Println("Files=", file.Name())
 				}
 			}
 		case reflect.Bool:
-			err := bodyWriter.WriteField(fieldTag, m.boolToIntString(val.Bool()))
+			formField, err := bodyWriter.CreateFormField(fieldTag)
 			if err != nil {
 				return nil, nil, err
 			}
-			fmt.Println(fieldTag, "=", m.boolToIntString(val.Bool()))
+			// fmt.Println(fieldTag, "=", m.boolToIntString(val.Bool()))
+			formField.Write([]byte(m.boolToIntString(val.Bool())))
 		default:
 			if val.String() != "" {
-				fmt.Println(fieldTag, "=", val.String())
-				err := bodyWriter.WriteField(fieldTag, val.String())
+				// fmt.Println(fieldTag, "=", val.String())
+				formField, err := bodyWriter.CreateFormField(fieldTag)
 				if err != nil {
 					return nil, nil, err
 				}
+				formField.Write([]byte(val.String()))
 			}
 		}
 	}
 
 	bodyWriter.Close()
 	return bodyBuf, bodyWriter, nil
-}
-
-func (m *Client) parseSignatureRequestResponse(response *http.Response) (*model.EmbeddedSendCreated, error) {
-	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(response.Status)
-	fmt.Println(string(body))
-
-	sigRequestResponse := &model.EmbeddedSendCreated{}
-
-	err = json.NewDecoder(response.Body).Decode(sigRequestResponse)
-
-	return sigRequestResponse, err
 }
 
 func (m *Client) boolToIntString(value bool) string {

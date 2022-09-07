@@ -6,7 +6,7 @@ type EmbeddedDocumentRequest struct {
 	EnableSigningOrder bool             `form_field:"EnableSigningOrder"`
 	RedirectUrl        string           `form_field:"RedirectUrl"`
 	Signers            []DocumentSigner `form_field:"Signers"`
-	Files              []DocumentFile   `form_field:"Files"`
+	Files              []string         `form_field:"Files"`
 	SendViewOption     string           `form_field:"SendViewOption"`
 	ShowToolbar        bool             `form_field:"ShowToolbar"`
 	// ShowNavigationButtons bool             `form_field:"ShowNavigationButtons"`
@@ -58,7 +58,7 @@ func (e *EmbeddedDocumentRequest) GetSendViewOption() string {
 }
 
 // GetFile returns File
-func (e *EmbeddedDocumentRequest) GetFiles() []DocumentFile {
+func (e *EmbeddedDocumentRequest) GetFiles() []string {
 	if e != nil {
 		return e.Files
 	}

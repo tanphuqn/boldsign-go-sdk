@@ -1,11 +1,11 @@
 package model
 
 type DocumentSigner struct {
-	Name         string
-	EmailAddress string
+	Name         string `json:"name"`
+	EmailAddress string `json:"emailAddress"`
 	// PrivateMessage     string                   `field:"PrivateMessage"`
 	// AuthenticationCode string                   `field:"AuthenticationCode"`
-	// SignerOrder int `json:"SignerOrder"`
+	SignerOrder int `json:"signerOrder"`
 	// EnableEmailOTP     bool                     `field:"EnableEmailOTP"`
 	// SignerType         string                   `field:"SignerType"`
 	// FormFields         []map[string]interface{} `field:"FormFields"`
@@ -27,9 +27,9 @@ func (s *DocumentSigner) GetEmailAddress() string {
 	return ""
 }
 
-// func (s *DocumentSigner) GetSignerOrder() int {
-// 	if s != nil {
-// 		return s.SignerOrder
-// 	}
-// 	return 0
-// }
+func (s *DocumentSigner) GetSignerOrder() int {
+	if s != nil {
+		return s.SignerOrder
+	}
+	return 1
+}

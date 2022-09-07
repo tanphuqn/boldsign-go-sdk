@@ -1,17 +1,13 @@
 package model
 
 type ErrorResponse struct {
-	Error    *Error    `json:"error"`
-	Warnings []Warning `json:"warnings"`
-}
-
-type Error struct {
-	Message string `json:"error_msg"`
-	Name    string `json:"error_name"`
+	ErrorCode    int    `json:"errorCode"`
+	Message      string `json:"message"`
+	ErrorContent string `json:"errorContent"`
 }
 
 // GetMessage returns Message
-func (e *Error) GetMessage() string {
+func (e *ErrorResponse) GetMessage() string {
 	if e != nil {
 		return e.Message
 	}
@@ -19,25 +15,14 @@ func (e *Error) GetMessage() string {
 }
 
 // GetName returns Name
-func (e *Error) GetName() string {
+func (e *ErrorResponse) GetErrorCode() int {
+	return e.ErrorCode
+}
+
+// GetMessage returns Message
+func (e *ErrorResponse) GetErrorContent() string {
 	if e != nil {
-		return e.Name
+		return e.ErrorContent
 	}
 	return ""
-}
-
-// GetError returns Error
-func (er *ErrorResponse) GetError() *Error {
-	if er != nil {
-		return er.Error
-	}
-	return nil
-}
-
-// GetWarnings returns Warnings
-func (er *ErrorResponse) GetWarnings() []Warning {
-	if er != nil {
-		return er.Warnings
-	}
-	return nil
 }
