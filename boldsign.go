@@ -15,17 +15,12 @@ import (
 )
 
 const (
-	baseURL               string = "https://api-eu.boldsign.com/v1/"
-	baseDomain            string = "https://account-eu.boldsign.com"
-	FormFieldKey          string = "form_field"
-	FileKey               string = "Files"
-	SignersKey            string = "Signers"
-	TitleKey              string = "Title"
-	RedirectUrlKey        string = "RedirectUrl"
-	MessageKey            string = "Message"
-	SendViewOptionKey     string = "SendViewOption"
-	ShowToolbarKey        string = "ShowToolbar"
-	EnableSigningOrderKey string = "EnableSigningOrder"
+	baseURL          string = "https://api-eu.boldsign.com/v1/"
+	baseDomain       string = "https://account-eu.boldsign.com"
+	FormFieldKey     string = "form_field"
+	FileKey          string = "Files"
+	SignersKey       string = "Signers"
+	ReminderSettings string = "ReminderSettings"
 )
 
 const (
@@ -83,13 +78,13 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 	bodyWriter := multipart.NewWriter(bodyBuf)
 	structType := reflect.TypeOf(embRequest)
 	val := reflect.ValueOf(embRequest)
-
 	for i := 0; i < val.NumField(); i++ {
 		valueField := val.Field(i)
 		f := valueField.Interface()
 		val := reflect.ValueOf(f)
 		field := structType.Field(i)
 		fieldTag := field.Tag.Get(FormFieldKey)
+		println(fieldTag, "--", val.Kind())
 		switch val.Kind() {
 		case reflect.Slice:
 			switch fieldTag {
@@ -106,15 +101,12 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 						return nil, nil, err
 					}
 					formField.Write([]byte(signer.GetName()))
-					// fmt.Println(fmt.Sprintf("%s[%v][Name]", SignersKey, i), "=", signer.GetName())
 
 					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][SignerOrder]", SignersKey, i))
 					if err != nil {
 						return nil, nil, err
 					}
 					formField.Write([]byte(strconv.Itoa(signer.GetSignerOrder())))
-
-					// fmt.Println(fmt.Sprintf("%s[%v][SignerOrder]", SignersKey, i), "=", signer.GetSignerOrder())
 				}
 			case FileKey:
 				for _, path := range embRequest.GetFiles() {
@@ -124,7 +116,6 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 						return nil, nil, err
 					}
 					_, err = io.Copy(formField, file)
-					// fmt.Println("Files=", file.Name())
 				}
 			}
 		case reflect.Bool:
@@ -132,11 +123,31 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 			if err != nil {
 				return nil, nil, err
 			}
-			// fmt.Println(fieldTag, "=", m.boolToIntString(val.Bool()))
 			formField.Write([]byte(m.boolToIntString(val.Bool())))
+		case reflect.Struct:
+			switch fieldTag {
+			case ReminderSettings:
+				fmt.Println("ReminderSettings.ReminderCount", "=", embRequest.ReminderSettings.ReminderCount)
+				formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+				if err != nil {
+					return nil, nil, err
+				}
+				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+				formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+				if err != nil {
+					return nil, nil, err
+				}
+				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+
+			}
+		case reflect.Int:
+			formField, err := bodyWriter.CreateFormField(fieldTag)
+			if err != nil {
+				return nil, nil, err
+			}
+			formField.Write([]byte(strconv.Itoa(int(val.Int()))))
 		default:
 			if val.String() != "" {
-				// fmt.Println(fieldTag, "=", val.String())
 				formField, err := bodyWriter.CreateFormField(fieldTag)
 				if err != nil {
 					return nil, nil, err

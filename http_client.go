@@ -6,14 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/tanphuqn/boldsign-go-sdk/model"
 )
 
 func (m *Client) GetToken() (string, error) {
@@ -45,7 +44,7 @@ func (m *Client) GetToken() (string, error) {
 					return "", err
 				}
 				accessToken := data["access_token"].(string)
-				fmt.Println(accessToken)
+				// fmt.Println(accessToken)
 				return accessToken, nil
 			}
 		}
@@ -83,31 +82,35 @@ func (m *Client) request(method string, path string, params *bytes.Buffer, w mul
 	}
 	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(), path)
 	request, _ := http.NewRequest(method, endpoint, params)
-	request.Header.Set("Content-Type", w.FormDataContentType())
+	request.Header.Add("Content-Type", w.FormDataContentType())
+	request.Header.Add("accept", "application/json")
 	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	request.Header.Add("accept-encoding", "gzip, deflate, br")
+	request.Header.Add("accept-language", "en,vi;q=0.9,en-US;q=0.8,la;q=0.7,he;q=0.6")
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36")
+	request.Header.Add("origin", "https://api-eu.boldsign.com")
+	request.Header.Add("cache-control", "no-cache")
+	// Loop over header names
+	// for name, values := range request.Header {
+	// 	// Loop over all values for the name.
+	// 	for _, value := range values {
+	// 		fmt.Println(name, value)
+	// 	}
+	// }
 	response, err := m.getHTTPClient().Do(request)
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 	defer response.Body.Close()
-
+	bodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		// log.Fatal().Msg(err.Error())
+		return nil, err
+	}
+	bodyString := string(bodyBytes)
 	if response.StatusCode >= 400 {
-		// // read response body
-		// body, error := ioutil.ReadAll(response.Body)
-		// if error != nil {
-		// 	fmt.Println(error)
-		// }
-		// // close response body
-		// response.Body.Close()
-		// // print response body
-		// fmt.Println(string(body))
 
-		msg := fmt.Sprintf("boldsign request failed with status %d", response.StatusCode)
-		e := &model.ErrorResponse{}
-		json.NewDecoder(response.Body).Decode(e)
-		msg = msg + "," + fmt.Sprintf("%s: %s", e.Message, e.ErrorContent)
-		return response, errors.New(msg)
+		return response, errors.New(fmt.Sprintf(`Error: %d`, response.StatusCode) + "-" + bodyString)
 	}
 
 	return response, err

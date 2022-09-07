@@ -13,7 +13,11 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 	var signers []model.DocumentSigner
 	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com", SignerOrder: 1})
 	// signers = append(signers, model.DocumentSigner{Name: "Signer Name 2", SignerOrder: 2, EmailAddress: "tanphuqn+2@gmail.com"})
-
+	// reminderSettings := model.ReminderSettings{
+	// 	ReminderDays:       1,
+	// 	ReminderCount:      1,
+	// 	EnableAutoReminder: false,
+	// }
 	var files []string
 	files = append(files, "./test.pdf")
 
@@ -25,13 +29,29 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 		Title:              "Sent from API Curl",
 		Message:            "This is document message sent from API Curl",
 		EnableSigningOrder: true,
-		Signers:            signers,
-		ShowToolbar:        true,
 		RedirectUrl:        "https://boldsign.dev/sign/redirect",
-
-		Files: files,
+		Signers:            signers,
+		Files:              files,
+		// ShowToolbar:           true,
+		// DisableExpiryAlert:    false,
+		// SendViewOption:        "FillingPage",
+		// ReminderSettings:      reminderSettings,
+		// BrandId:               "",
+		// EnableReassign:        false,
+		ExpiryDays: 1,
+		// EnablePrintAndSign:    false,
+		// ShowSaveButton:        false,
+		// OnBehalfOf:            "",
+		// UseTextTags:           false,
+		// SendLinkValidTill:     "",
+		// ShowNavigationButtons: false,
+		// ShowSendButton:        false,
+		// HideDocumentId:        false,
+		// EnableEmbeddedSigning: false,
+		// ShowPreviewButton:     false,
+		// DisableEmails:         false,
 	}
-	fmt.Printf("%+v\n", request)
+	// fmt.Printf("%+v\n", request)
 	result, err := client.CreateEmbeddedRequestUrl(request)
 	if err != nil {
 		println("dest")

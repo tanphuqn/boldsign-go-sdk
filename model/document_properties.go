@@ -9,27 +9,27 @@ type DocumentProperties struct {
 	Files               []File                  `json:"files"`
 	SenderDetail        SenderDetail            `json:"senderDetail"`
 	SignerDetails       []DocumentSignerDetails `json:"signerDetails"`
-	ccDetails           []DocumentCcDetails     `json:"ccDetails"`
-	reminderSettings    ReminderSettings        `json:"reminderSettings"`
-	reassign            DocumentReassign        `json:"reassign"`
-	documentHistory     AuditTrail              `json:"documentHistory"`
-	activityBy          string                  `json:"activityBy"`
-	activityDate        int                     `json:"activityDate"`
-	activityAction      string                  `json:"activityAction"`
-	createdDate         int                     `json:"createdDate"`
-	expiryDays          int                     `json:"expiryDays"`
-	expiryDate          int                     `json:"expiryDate"`
-	enableSigningOrder  bool                    `json:"enableSigningOrder"`
-	isDeleted           bool                    `json:"isDeleted"`
-	revokeMessage       string                  `json:"revokeMessage"`
-	declineMessage      string                  `json:"declineMessage"`
-	applicationId       string                  `json:"applicationId"`
-	labels              []string                `json:"labels"`
-	disableEmails       bool                    `json:"disableEmails"`
-	enablePrintAndSign  bool                    `json:"enablePrintAndSign"`
-	enableReassign      bool                    `json:"enableReassign"`
-	disableExpiryAlert  bool                    `json:"disableExpiryAlert"`
-	hideDocumentId      bool                    `json:"hideDocumentId"`
+	CcDetails           []DocumentCcDetails     `json:"ccDetails"`
+	ReminderSettings    ReminderSettings        `json:"reminderSettings"`
+	Reassign            DocumentReassign        `json:"reassign"`
+	DocumentHistory     AuditTrail              `json:"documentHistory"`
+	ActivityBy          string                  `json:"activityBy"`
+	ActivityDate        int                     `json:"activityDate"`
+	ActivityAction      string                  `json:"activityAction"`
+	CreatedDate         int                     `json:"createdDate"`
+	ExpiryDays          int                     `json:"expiryDays"`
+	ExpiryDate          int                     `json:"expiryDate"`
+	EnableSigningOrder  bool                    `json:"enableSigningOrder"`
+	IsDeleted           bool                    `json:"isDeleted"`
+	RevokeMessage       string                  `json:"revokeMessage"`
+	DeclineMessage      string                  `json:"declineMessage"`
+	ApplicationId       string                  `json:"applicationId"`
+	Labels              []string                `json:"labels"`
+	DisableEmails       bool                    `json:"disableEmails"`
+	EnablePrintAndSign  bool                    `json:"enablePrintAndSign"`
+	EnableReassign      bool                    `json:"enableReassign"`
+	DisableExpiryAlert  bool                    `json:"disableExpiryAlert"`
+	HideDocumentId      bool                    `json:"hideDocumentId"`
 }
 
 type File struct {
