@@ -1,30 +1,30 @@
 package model
 
 type EmbeddedDocumentRequest struct {
-	Title                 string           `form_field:"Title"`
-	Message               string           `form_field:"Message"`
-	EnableSigningOrder    bool             `form_field:"EnableSigningOrder"`
-	RedirectUrl           string           `form_field:"RedirectUrl"`
-	Signers               []DocumentSigner `form_field:"Signers"`
-	Files                 []string         `form_field:"Files"`
-	SendViewOption        string           `form_field:"SendViewOption"`
-	BrandId               string           `form_field:"BrandId"`
-	OnBehalfOf            string           `form_field:"OnBehalfOf"`
-	SendLinkValidTill     string           `form_field:"SendLinkValidTill"`
-	ShowToolbar           bool             `form_field:"ShowToolbar"`
-	ShowNavigationButtons bool             `form_field:"ShowNavigationButtons"`
-	ShowSaveButton        bool             `form_field:"ShowSaveButton"`
-	ShowPreviewButton     bool             `form_field:"ShowPreviewButton"`
-	ShowSendButton        bool             `form_field:"ShowSendButton"`
-	EnableReassign        bool             `form_field:"DisableExpiryAlert"`
-	EnablePrintAndSign    bool             `form_field:"DisableExpiryAlert"`
-	UseTextTags           bool             `form_field:"DisableExpiryAlert"`
-	DisableExpiryAlert    bool             `form_field:"DisableExpiryAlert"`
-	EnableEmbeddedSigning bool             `form_field:"EnableEmbeddedSigning"`
-	HideDocumentId        bool             `form_field:"DisableExpiryAlert"`
-	DisableEmails         bool             `form_field:"DisableEmails"`
-	ExpiryDays            int              `form_field:"ExpiryDays"`
-	ReminderSettings      ReminderSettings `form_field:"ReminderSettings"`
+	Title       string           `form_field:"Title"`
+	Message     string           `form_field:"Message"`
+	RedirectUrl string           `form_field:"RedirectUrl"`
+	Signers     []DocumentSigner `form_field:"Signers"`
+	Files       []string         `form_field:"Files"`
+	// EnableSigningOrder bool             `form_field:"EnableSigningOrder"`
+	// SendViewOption        string           `form_field:"SendViewOption"`
+	// BrandId               string           `form_field:"BrandId"`
+	// OnBehalfOf            string           `form_field:"OnBehalfOf"`
+	// SendLinkValidTill     string           `form_field:"SendLinkValidTill"`
+	// ShowToolbar           bool             `form_field:"ShowToolbar"`
+	// ShowNavigationButtons bool             `form_field:"ShowNavigationButtons"`
+	// ShowSaveButton        bool             `form_field:"ShowSaveButton"`
+	// ShowPreviewButton     bool             `form_field:"ShowPreviewButton"`
+	// ShowSendButton        bool             `form_field:"ShowSendButton"`
+	// EnableReassign        bool             `form_field:"DisableExpiryAlert"`
+	// EnablePrintAndSign    bool             `form_field:"DisableExpiryAlert"`
+	// UseTextTags           bool             `form_field:"DisableExpiryAlert"`
+	// DisableExpiryAlert    bool             `form_field:"DisableExpiryAlert"`
+	// EnableEmbeddedSigning bool             `form_field:"EnableEmbeddedSigning"`
+	// HideDocumentId        bool             `form_field:"DisableExpiryAlert"`
+	// DisableEmails         bool             `form_field:"DisableEmails"`
+	// ExpiryDays            int              `form_field:"ExpiryDays"`
+	// ReminderSettings      ReminderSettings `form_field:"ReminderSettings"`
 }
 
 func (e *EmbeddedDocumentRequest) GetTitle() string {

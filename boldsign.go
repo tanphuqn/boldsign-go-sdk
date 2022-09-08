@@ -124,27 +124,28 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 				return nil, nil, err
 			}
 			formField.Write([]byte(m.boolToIntString(val.Bool())))
-		case reflect.Struct:
-			switch fieldTag {
-			case ReminderSettings:
-				fmt.Println("ReminderSettings.ReminderCount", "=", embRequest.ReminderSettings.ReminderCount)
-				formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-				if err != nil {
-					return nil, nil, err
-				}
-				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
-				formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-				if err != nil {
-					return nil, nil, err
-				}
-				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+		// case reflect.Struct:
+		// 	switch fieldTag {
+		// 	case ReminderSettings:
+		// 		fmt.Println("ReminderSettings.ReminderCount", "=", embRequest.ReminderSettings.ReminderCount)
+		// 		formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+		// 		if err != nil {
+		// 			return nil, nil, err
+		// 		}
+		// 		formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+		// 		formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+		// 		if err != nil {
+		// 			return nil, nil, err
+		// 		}
+		// 		formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
 
-			}
+		// }
 		case reflect.Int:
 			formField, err := bodyWriter.CreateFormField(fieldTag)
 			if err != nil {
 				return nil, nil, err
 			}
+			fmt.Println(val)
 			formField.Write([]byte(strconv.Itoa(int(val.Int()))))
 		default:
 			if val.String() != "" {
