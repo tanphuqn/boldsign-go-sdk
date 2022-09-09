@@ -91,23 +91,12 @@ func (m *Client) request(method string, path string, params *bytes.Buffer, w mul
 		return nil, err
 	}
 
-	// Loop over header names
-	for name, values := range response.Header {
-		// Loop over all values for the name.
-		for _, value := range values {
-			fmt.Println(name, value)
-		}
-	}
-
-	defer response.Body.Close()
-	bodyBytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		// log.Fatal().Msg(err.Error())
-		return nil, err
-	}
-	bodyString := string(bodyBytes)
 	if response.StatusCode >= 400 {
-
+		bodyBytes, err := io.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+		bodyString := string(bodyBytes)
 		return response, errors.New(fmt.Sprintf(`Error: %d`, response.StatusCode) + "-" + bodyString)
 	}
 

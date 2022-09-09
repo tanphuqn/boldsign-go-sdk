@@ -7,12 +7,16 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"os"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/tanphuqn/boldsign-go-sdk/model"
 )
+
+var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
 
 const (
 	baseURL          string = "https://api-eu.boldsign.com/v1/"
@@ -39,7 +43,7 @@ type Client struct {
 
 // CreateEmbeddedRequestUrl creates a new embedded signature with template id
 func (m *Client) CreateEmbeddedRequestUrl(req model.EmbeddedDocumentRequest) (*model.EmbeddedSendCreated, error) {
-	bodyBuf, bodyWriter, err := m.marshalMultipartEmbeddedSignatureRequest(req)
+	bodyBuf, bodyWriter, err := m.MarshalMultipartEmbeddedSignatureRequest(req)
 	if err != nil {
 		fmt.Println("marshalMultipartEmbeddedSignatureRequest Error:", err.Error())
 		return nil, err
@@ -49,12 +53,19 @@ func (m *Client) CreateEmbeddedRequestUrl(req model.EmbeddedDocumentRequest) (*m
 	if err != nil {
 		return nil, err
 	}
-
+	defer response.Body.Close()
+	// bodyBytes, err := io.ReadAll(response.Body)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// bodyString := string(bodyBytes)
+	// fmt.Printf("%+v\n", bodyString)
 	data := &model.EmbeddedSendCreated{}
 	err = json.NewDecoder(response.Body).Decode(data)
 	if err != nil {
 		return nil, err
 	}
+	// fmt.Printf("%+v\n", data)
 	return data, nil
 
 }
@@ -73,7 +84,7 @@ func (m *Client) GetProperties(documentId string) (*model.DocumentProperties, er
 	return data, nil
 }
 
-func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.EmbeddedDocumentRequest) (*bytes.Buffer, *multipart.Writer, error) {
+func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.EmbeddedDocumentRequest) (*bytes.Buffer, *multipart.Writer, error) {
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
 	structType := reflect.TypeOf(embRequest)
@@ -84,7 +95,6 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 		val := reflect.ValueOf(f)
 		field := structType.Field(i)
 		fieldTag := field.Tag.Get(FormFieldKey)
-		println(fieldTag, "--", val.Kind())
 		switch val.Kind() {
 		case reflect.Slice:
 			switch fieldTag {
@@ -110,8 +120,17 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 				}
 			case FileKey:
 				for _, path := range embRequest.GetFiles() {
-					file, _ := os.Open(path)
-					formField, err := bodyWriter.CreateFormFile("Files", file.Name())
+					file, err := os.Open(path)
+					if err != nil {
+						panic(err)
+					}
+					buffer := make([]byte, 512)
+					_, err = file.Read(buffer)
+					if err != nil {
+						fmt.Println(err)
+					}
+					contentType := http.DetectContentType(buffer)
+					formField, err := m.CreateFormFileWithContentType(bodyWriter, "Files", file.Name(), contentType)
 					if err != nil {
 						return nil, nil, err
 					}
@@ -123,29 +142,27 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 			if err != nil {
 				return nil, nil, err
 			}
-			formField.Write([]byte(m.boolToIntString(val.Bool())))
-		// case reflect.Struct:
-		// 	switch fieldTag {
-		// 	case ReminderSettings:
-		// 		fmt.Println("ReminderSettings.ReminderCount", "=", embRequest.ReminderSettings.ReminderCount)
-		// 		formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-		// 		if err != nil {
-		// 			return nil, nil, err
-		// 		}
-		// 		formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
-		// 		formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-		// 		if err != nil {
-		// 			return nil, nil, err
-		// 		}
-		// 		formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+			formField.Write([]byte(m.BoolToIntString(val.Bool())))
+		case reflect.Struct:
+			switch fieldTag {
+			case ReminderSettings:
+				formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+				if err != nil {
+					return nil, nil, err
+				}
+				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+				formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+				if err != nil {
+					return nil, nil, err
+				}
+				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
 
-		// }
+			}
 		case reflect.Int:
 			formField, err := bodyWriter.CreateFormField(fieldTag)
 			if err != nil {
 				return nil, nil, err
 			}
-			fmt.Println(val)
 			formField.Write([]byte(strconv.Itoa(int(val.Int()))))
 		default:
 			if val.String() != "" {
@@ -162,9 +179,23 @@ func (m *Client) marshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 	return bodyBuf, bodyWriter, nil
 }
 
-func (m *Client) boolToIntString(value bool) string {
+func (m *Client) BoolToIntString(value bool) string {
 	if value == true {
 		return "true"
 	}
 	return "false"
+}
+
+func (m *Client) CreateFormFileWithContentType(w *multipart.Writer, fieldname, filename, contentType string) (io.Writer, error) {
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition",
+		fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
+			m.EscapeQuotes(fieldname), m.EscapeQuotes(filename)))
+	h.Set("Content-Type", contentType)
+
+	return w.CreatePart(h)
+}
+
+func (m *Client) EscapeQuotes(s string) string {
+	return quoteEscaper.Replace(s)
 }

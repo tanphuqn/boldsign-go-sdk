@@ -1,8 +1,8 @@
 package model
 
 type EmbeddedSendCreated struct {
-	DocumentId string `json:"document_id"`
-	SendUrl    string `json:"send_url"`
+	DocumentId string `json:"documentId"`
+	SendUrl    string `json:"sendUrl"`
 }
 
 // GetDocumentId returns DocumentId
