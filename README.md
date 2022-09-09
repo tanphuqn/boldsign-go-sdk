@@ -12,7 +12,7 @@ https://www.boldsign.com/help/api/general/preparing-your-application/
 Note that you need to include the **v** in the version tag.
 
 ```
-$ go get github.com/tanphuqn/boldsign-go-sdk@v1.0.0
+$ go get github.com/tanphuqn/boldsign-go-sdk
 ```
 
 

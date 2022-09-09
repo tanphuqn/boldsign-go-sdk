@@ -19,12 +19,13 @@ import (
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
 
 const (
-	baseURL          string = "https://api-eu.boldsign.com/v1/"
-	baseDomain       string = "https://account-eu.boldsign.com"
-	FormFieldKey     string = "form_field"
-	FileKey          string = "Files"
-	SignersKey       string = "Signers"
-	ReminderSettings string = "ReminderSettings"
+	baseURL             string = "https://api-eu.boldsign.com/v1/"
+	baseDomain          string = "https://account-eu.boldsign.com"
+	FormFieldKey        string = "form_field"
+	FileKey             string = "Files"
+	SignersKey          string = "Signers"
+	ReminderSettingsKey string = "ReminderSettings"
+	ExpiryDaysKey       string = "ExpiryDays"
 )
 
 const (
@@ -145,25 +146,42 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 			formField.Write([]byte(m.BoolToIntString(val.Bool())))
 		case reflect.Struct:
 			switch fieldTag {
-			case ReminderSettings:
-				formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-				if err != nil {
-					return nil, nil, err
-				}
-				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
-				formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-				if err != nil {
-					return nil, nil, err
-				}
-				formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+			// case ReminderSettingsKey:
+			// 	formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+			// 	if err != nil {
+			// 		return nil, nil, err
+			// 	}
+			// 	formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+			// 	formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+			// 	if err != nil {
+			// 		return nil, nil, err
+			// 	}
+			// 	formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
 
 			}
 		case reflect.Int:
-			formField, err := bodyWriter.CreateFormField(fieldTag)
-			if err != nil {
-				return nil, nil, err
+			switch fieldTag {
+			case ExpiryDaysKey:
+				{
+					fmt.Println(val.Int())
+					if val.Int() != 0 {
+						formField, err := bodyWriter.CreateFormField(fieldTag)
+						if err != nil {
+							return nil, nil, err
+						}
+						formField.Write([]byte(strconv.Itoa(int(val.Int()))))
+					}
+				}
+			default:
+				{
+					formField, err := bodyWriter.CreateFormField(fieldTag)
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(strconv.Itoa(int(val.Int()))))
+				}
 			}
-			formField.Write([]byte(strconv.Itoa(int(val.Int()))))
+
 		default:
 			if val.String() != "" {
 				formField, err := bodyWriter.CreateFormField(fieldTag)
