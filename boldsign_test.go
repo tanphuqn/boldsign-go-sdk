@@ -19,8 +19,9 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 	// 	EnableAutoReminder: false,
 	// }
 	var files []string
-	files = append(files, "./test.pdf")
-
+	files = append(files, "./test.pdf", "./download.png")
+	// files = append(files, "./test.pdf")
+	// files = append(files, "./download.png")
 	clientID := "93faa0be-9338-4dff-86d4-e993a9747b8e"
 	secret := "7b426406-b20a-4342-9122-8952f1a0e9ce"
 

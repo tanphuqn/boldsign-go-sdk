@@ -126,14 +126,7 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 						panic(err)
 					}
 					defer file.Close()
-					// buffer := make([]byte, 512)
-					// _, err = file.Read(buffer)
-					// if err != nil {
-					// 	fmt.Println(err)
-					// }
-					// fmt.Println(http.DetectContentType(buffer))
-					contentType := "application/pdf"
-					formField, err := m.CreateFormFileWithContentType(bodyWriter, "Files", file.Name(), contentType)
+					formField, err := m.CreateFormFileWithContentType(bodyWriter, "Files", file.Name(), path)
 					if err != nil {
 						return nil, nil, err
 					}
@@ -209,7 +202,23 @@ func (m *Client) BoolToIntString(value bool) string {
 	return "false"
 }
 
-func (m *Client) CreateFormFileWithContentType(w *multipart.Writer, fieldname, filename, contentType string) (io.Writer, error) {
+func (m *Client) CreateFormFileWithContentType(w *multipart.Writer, fieldname, filename, path string) (io.Writer, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil, err
+	}
+	defer file.Close()
+
+	buffer := make([]byte, 512)
+	n, err := file.Read(buffer)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil, err
+	}
+	fmt.Println(http.DetectContentType(buffer[:n]))
+	contentType := http.DetectContentType(buffer[:n])
+
 	h := make(textproto.MIMEHeader)
 	h.Set("Content-Disposition",
 		fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
