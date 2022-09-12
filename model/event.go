@@ -1,7 +1,7 @@
 package model
 
 type Event struct {
-	Event *Event              `json:"event"`
+	Event *EventData          `json:"event"`
 	Data  *DocumentProperties `json:"data"`
 }
 

@@ -55,12 +55,6 @@ func (m *Client) CreateEmbeddedRequestUrl(req model.EmbeddedDocumentRequest) (*m
 		return nil, err
 	}
 	defer response.Body.Close()
-	// bodyBytes, err := io.ReadAll(response.Body)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// bodyString := string(bodyBytes)
-	// fmt.Printf("%+v\n", bodyString)
 	data := &model.EmbeddedSendCreated{}
 	err = json.NewDecoder(response.Body).Decode(data)
 	if err != nil {
@@ -144,24 +138,27 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 			formField.Write([]byte(m.BoolToIntString(val.Bool())))
 		case reflect.Struct:
 			switch fieldTag {
-			// case ReminderSettingsKey:
-			// 	formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-			// 	if err != nil {
-			// 		return nil, nil, err
-			// 	}
-			// 	formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
-			// 	formField, err = bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
-			// 	if err != nil {
-			// 		return nil, nil, err
-			// 	}
-			// 	formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+			case ReminderSettingsKey:
+				if embRequest.ReminderSettings.ReminderCount != 0 {
+					formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+				}
 
+				if embRequest.ReminderSettings.ReminderCount != 0 {
+					formField, err := bodyWriter.CreateFormField("ReminderSettings.ReminderCount")
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(strconv.Itoa(embRequest.ReminderSettings.ReminderCount)))
+				}
 			}
 		case reflect.Int:
 			switch fieldTag {
 			case ExpiryDaysKey:
 				{
-					fmt.Println(val.Int())
 					if val.Int() != 0 {
 						formField, err := bodyWriter.CreateFormField(fieldTag)
 						if err != nil {
@@ -179,7 +176,6 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 					formField.Write([]byte(strconv.Itoa(int(val.Int()))))
 				}
 			}
-
 		default:
 			if val.String() != "" {
 				formField, err := bodyWriter.CreateFormField(fieldTag)
