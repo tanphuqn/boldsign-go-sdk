@@ -125,17 +125,22 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 					if err != nil {
 						panic(err)
 					}
-					buffer := make([]byte, 512)
-					_, err = file.Read(buffer)
-					if err != nil {
-						fmt.Println(err)
-					}
-					contentType := http.DetectContentType(buffer)
+					defer file.Close()
+					// buffer := make([]byte, 512)
+					// _, err = file.Read(buffer)
+					// if err != nil {
+					// 	fmt.Println(err)
+					// }
+					// fmt.Println(http.DetectContentType(buffer))
+					contentType := "application/pdf"
 					formField, err := m.CreateFormFileWithContentType(bodyWriter, "Files", file.Name(), contentType)
 					if err != nil {
 						return nil, nil, err
 					}
 					_, err = io.Copy(formField, file)
+					if err != nil {
+						fmt.Println(err)
+					}
 				}
 			}
 		case reflect.Bool:
@@ -198,7 +203,7 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 }
 
 func (m *Client) BoolToIntString(value bool) string {
-	if value == true {
+	if value {
 		return "true"
 	}
 	return "false"
