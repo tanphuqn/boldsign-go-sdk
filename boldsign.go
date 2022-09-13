@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -65,17 +66,54 @@ func (m *Client) CreateEmbeddedRequestUrl(req model.EmbeddedDocumentRequest) (*m
 
 }
 
-func (m *Client) GetProperties(documentId string) (*model.DocumentProperties, error) {
-	path := fmt.Sprintf("https://api-eu.boldsign.com/v1/document/properties?documentId=%s", documentId)
+func (m *Client) GetEmbeddedSignLink(documentId string, signerEmail string, redirectUrl string) (*model.EmbeddedSigningLink, error) {
+	path := fmt.Sprintf("document/getEmbeddedSignLink?documentId=%s", documentId)
+	if signerEmail != "" {
+		path = fmt.Sprintf("%s&signerEmail=%s", path, signerEmail)
+	}
+	if redirectUrl != "" {
+		path = fmt.Sprintf("%s&redirectUrl=%s", path, redirectUrl)
+	}
 	response, err := m.get(path)
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
+	data := &model.EmbeddedSigningLink{}
+	err = json.NewDecoder(response.Body).Decode(data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (m *Client) GetProperties(documentId string) (*model.DocumentProperties, error) {
+	path := fmt.Sprintf("document/properties?documentId=%s", documentId)
+	response, err := m.get(path)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
 	data := &model.DocumentProperties{}
 	err = json.NewDecoder(response.Body).Decode(data)
 	if err != nil {
 		return nil, err
 	}
+	return data, nil
+}
+
+func (m *Client) DownloadDocument(documentId string) ([]byte, error) {
+	path := fmt.Sprintf("document/download?documentId=%s", documentId)
+	response, err := m.get(path)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
 	return data, nil
 }
 

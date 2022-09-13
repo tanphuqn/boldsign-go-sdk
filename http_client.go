@@ -66,8 +66,6 @@ func (m *Client) get(path string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
-
 	return response, err
 }
 

@@ -11,8 +11,8 @@ type DocumentProperties struct {
 	SignerDetails       []DocumentSignerDetails `json:"signerDetails"`
 	CcDetails           []DocumentCcDetails     `json:"ccDetails"`
 	ReminderSettings    ReminderSettings        `json:"reminderSettings"`
-	Reassign            DocumentReassign        `json:"reassign"`
-	DocumentHistory     AuditTrail              `json:"documentHistory"`
+	Reassign            []DocumentReassign      `json:"reassign"`
+	DocumentHistory     []AuditTrail            `json:"documentHistory"`
 	ActivityBy          string                  `json:"activityBy"`
 	ActivityDate        int                     `json:"activityDate"`
 	ActivityAction      string                  `json:"activityAction"`
@@ -35,7 +35,7 @@ type DocumentProperties struct {
 type File struct {
 	DocumentName string `json:"documentName"`
 	Order        int    `json:"order"`
-	PageCount    string `json:"pageCount"`
+	PageCount    int    `json:"pageCount"`
 }
 
 type SenderDetail struct {
