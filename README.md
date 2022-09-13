@@ -25,23 +25,31 @@ client := boldsign.Client{ClientID: "CLIENT ID", Secret: "SECRET"}
 ### Embedded Signature Request
 
 ```go
+	var signers []model.DocumentSigner
+	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com"})
+	var files []string
+	files = append(files, "./test.pdf")
+
 	request := model.EmbeddedDocumentRequest{
-		Title:              "Sent from API Curl",
-		ShowToolbar:        true,
-		RedirectUrl:        "https://boldsign.dev/sign/redirect",
-		Message:            "Message",
-		EnableSigningOrder: false,
-		Signers:            signers,
-		Files:              files,
-		SendViewOption:     "FillingPage",
+		BrandId:               brandId,
+		Title:                 "Sent from API Curl",
+		Message:               "This is document message sent from API Curl",
+		Signers:               signers,
+		Files:                 files,
+		EnableSigningOrder:    true,
+		ShowToolbar:           true,
+		ShowSaveButton:        true,
+		ShowNavigationButtons: true,
+		ShowSendButton:        true,
+		ShowPreviewButton:     true,
 	}
-	fmt.Printf("%+v\n", request)
+	// fmt.Printf("%+v\n", request)
 	result, err := client.CreateEmbeddedRequestUrl(request)
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
-    // type EmbeddedSendCreated
-    fmt.Println(result.GetSendUrl())
+	fmt.Println(result)
 ```
 
 ## Testing
