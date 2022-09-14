@@ -252,7 +252,6 @@ func (m *Client) CreateFormFileWithContentType(w *multipart.Writer, fieldname, f
 		fmt.Println("Error:", err)
 		return nil, err
 	}
-	fmt.Println(http.DetectContentType(buffer[:n]))
 	contentType := http.DetectContentType(buffer[:n])
 
 	h := make(textproto.MIMEHeader)
