@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/textproto"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -158,13 +159,14 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 						panic(err)
 					}
 					defer file.Close()
-					formField, err := m.CreateFormFileWithContentType(bodyWriter, "Files", file.Name(), path)
+					fileName := filepath.Base(path)
+					formField, err := m.CreateFormFileWithContentType(bodyWriter, "Files", fileName, path)
 					if err != nil {
 						return nil, nil, err
 					}
 					_, err = io.Copy(formField, file)
 					if err != nil {
-						fmt.Println(err)
+						return nil, nil, err
 					}
 				}
 			}

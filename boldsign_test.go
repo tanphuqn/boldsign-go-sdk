@@ -2,7 +2,6 @@ package boldsign
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"testing"
 
@@ -12,7 +11,8 @@ import (
 var clientID = ""
 var secret = ""
 var brandId = ""
-var documentId = ""
+
+// var documentId = ""
 
 func TestCreateEmbeddedRequestUrl(t *testing.T) {
 
@@ -46,41 +46,41 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 	fmt.Println(result)
 }
 
-func TestGetEmbeddedSignLink(t *testing.T) {
-	client := Client{ClientID: clientID, Secret: secret}
-	result, err := client.GetEmbeddedSignLink(documentId, "tanphuqn@gmail.com", "")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	fmt.Println(result)
-}
+// func TestGetEmbeddedSignLink(t *testing.T) {
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	result, err := client.GetEmbeddedSignLink(documentId, "tanphuqn@gmail.com", "")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
+// 	fmt.Println(result)
+// }
 
-func TestDownloadDocument(t *testing.T) {
-	client := Client{ClientID: clientID, Secret: secret}
-	response, err := client.DownloadDocument(documentId)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+// func TestDownloadDocument(t *testing.T) {
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	response, err := client.DownloadDocument(documentId)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
 
-	fileName := "signed_" + documentId + ".pdf"
-	err = ioutil.WriteFile(fileName, response, 0644)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+// 	fileName := "signed_" + documentId + ".pdf"
+// 	err = ioutil.WriteFile(fileName, response, 0644)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
 
-	fmt.Println(fileName)
-}
+// 	fmt.Println(fileName)
+// }
 
-func TestGetProperties(t *testing.T) {
-	client := Client{ClientID: clientID, Secret: secret}
-	response, err := client.GetProperties(documentId)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+// func TestGetProperties(t *testing.T) {
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	response, err := client.GetProperties(documentId)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
 
-	fmt.Println(response)
-}
+// 	fmt.Println(response)
+// }
