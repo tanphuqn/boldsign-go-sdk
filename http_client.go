@@ -66,6 +66,15 @@ func (m *Client) get(path string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	if response.StatusCode >= 400 {
+		bodyBytes, err := io.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+		bodyString := string(bodyBytes)
+		return response, errors.New(fmt.Sprintf(`Error: %d`, response.StatusCode) + "-" + bodyString)
+	}
+
 	return response, err
 }
 
