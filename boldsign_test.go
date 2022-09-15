@@ -17,16 +17,17 @@ var brandId = ""
 func TestCreateEmbeddedRequestUrl(t *testing.T) {
 
 	var signers []model.DocumentSigner
-	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com"})
+	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com", SignerOrder: 1})
 	var files []string
 	// files = append(files, "./test.pdf", "./download.png")
-	files = append(files, "./test.pdf")
+	files = append(files, "./main.go")
 	// files = append(files, "./download.png")
+	// files = append(files, "./Product Road Map.docx")
 
 	client := Client{ClientID: clientID, Secret: secret}
 	request := model.EmbeddedDocumentRequest{
 		BrandId:               brandId,
-		Title:                 "Sent from API Curl",
+		Title:                 "Sent from API Curl 3",
 		Message:               "This is document message sent from API Curl",
 		Signers:               signers,
 		Files:                 files,
@@ -36,6 +37,8 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 		ShowNavigationButtons: true,
 		ShowSendButton:        true,
 		ShowPreviewButton:     true,
+		DisableExpiryAlert:    true,
+		DisableEmails:         true,
 	}
 	// fmt.Printf("%+v\n", request)
 	result, err := client.CreateEmbeddedRequestUrl(request)

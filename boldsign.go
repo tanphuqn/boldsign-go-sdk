@@ -3,6 +3,7 @@ package boldsign
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,10 +16,12 @@ import (
 	"strconv"
 	"strings"
 
+	gomime "github.com/cubewise-code/go-mime"
 	"github.com/tanphuqn/boldsign-go-sdk/model"
 )
 
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
+var extestion = ".pdf,.png,.jpg,.docx"
 
 const (
 	baseURL             string = "https://api-eu.boldsign.com/v1/"
@@ -154,9 +157,15 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 				}
 			case FileKey:
 				for _, path := range embRequest.GetFiles() {
+					// https://www.boldsign.com/help/prepare-document/what-are-the-supported-file-formats-and-file-sizes/
+					ext := filepath.Ext(path)
+					fmt.Println("ext2:", ext)
+					if !strings.Contains(extestion, ext) {
+						return nil, nil, errors.New("Error: The BoldSign e-signature application supports files in the following formats: PDF, PNG, JPG, and Docx.")
+					}
 					file, err := os.Open(path)
 					if err != nil {
-						panic(err)
+						return nil, nil, err
 					}
 					defer file.Close()
 					fileName := filepath.Base(path)
@@ -239,21 +248,11 @@ func (m *Client) BoolToIntString(value bool) string {
 }
 
 func (m *Client) CreateFormFileWithContentType(w *multipart.Writer, fieldname, filename, path string) (io.Writer, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return nil, err
-	}
-	defer file.Close()
-
-	buffer := make([]byte, 512)
-	n, err := file.Read(buffer)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return nil, err
-	}
-	contentType := http.DetectContentType(buffer[:n])
-
+	// Get the file extension
+	ext := filepath.Ext(filename)
+	// An empty string is returned if the extension is not found
+	contentType := gomime.TypeByExtension(ext)
+	fmt.Println("contentType:", contentType)
 	h := make(textproto.MIMEHeader)
 	h.Set("Content-Disposition",
 		fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
