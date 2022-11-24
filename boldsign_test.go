@@ -39,6 +39,7 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 		ShowPreviewButton:     true,
 		DisableExpiryAlert:    true,
 		DisableEmails:         true,
+		//OnBehalfOf:            "minhthy01011991@gmail.com",
 	}
 	// fmt.Printf("%+v\n", request)
 	result, err := client.CreateEmbeddedRequestUrl(request)
@@ -48,6 +49,43 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 	}
 	fmt.Println(result)
 }
+
+// func TestCreateSenderIdentities(t *testing.T) {
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	request := model.SenderCreateRequest{
+// 		Name:  "Yahoo sender",
+// 		Email: "minhthy01011991@gmail.com",
+// 	}
+// 	result, err := client.CreateSenderIdentity(request)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
+// 	fmt.Println(result)
+// }
+
+// func TestUpdateSenderIdentity(t *testing.T) {
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	request := model.SenderUpdateRequest{
+// 		Name: "Yahoo sender Update",
+// 	}
+// 	err := client.UpdateSenderIdentity("minhthy01011991@gmail.com", request)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
+// 	fmt.Println(err)
+// }
+
+// func TestDeleteSenderIdentity(t *testing.T) {
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	err := client.DeleteSenderIdentity("minhthy01011991@gmail.com")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
+// 	fmt.Println(err)
+// }
 
 // func TestGetEmbeddedSignLink(t *testing.T) {
 // 	client := Client{ClientID: clientID, Secret: secret}
