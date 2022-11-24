@@ -296,3 +296,22 @@ func (m *Client) DeleteSenderIdentity(email string) error {
 	defer response.Body.Close()
 	return err
 }
+
+// DeleteSenderIdentity
+func (m *Client) VerifySenderIdentity(email string) (bool, error) {
+	path := fmt.Sprintf("senderIdentities/list?PageSize=1&Page=1&Search=%s", email)
+	response, err := m.get(path)
+
+	if err != nil {
+		return false, err
+	}
+
+	defer response.Body.Close()
+	data := &model.SenderIdentitiesResponse{}
+	err = json.NewDecoder(response.Body).Decode(data)
+	if err != nil || len(data.Result) == 0 {
+		return false, err
+	}
+
+	return data.Result[0].IsVerified(), nil
+}

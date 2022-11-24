@@ -87,6 +87,16 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 // 	fmt.Println(err)
 // }
 
+// func TestVerifySenderIdentity(t *testing.T) {
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	isVerified, err := client.VerifySenderIdentity("minhthy01011991@gmail.com")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
+// 	fmt.Println(isVerified)
+// }
+
 // func TestGetEmbeddedSignLink(t *testing.T) {
 // 	client := Client{ClientID: clientID, Secret: secret}
 // 	result, err := client.GetEmbeddedSignLink(documentId, "tanphuqn@gmail.com", "")
