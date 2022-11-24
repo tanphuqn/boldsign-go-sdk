@@ -24,7 +24,7 @@ var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
 var extestion = ".pdf,.png,.jpg,.docx"
 
 const (
-	baseURL             string = "https://api-eu.boldsign.com/v1/"
+	baseURL             string = "https://api-eu.boldsign.com/v1-beta/"
 	baseDomain          string = "https://account-eu.boldsign.com"
 	FormFieldKey        string = "form_field"
 	FileKey             string = "Files"
@@ -264,4 +264,35 @@ func (m *Client) CreateFormFileWithContentType(w *multipart.Writer, fieldname, f
 
 func (m *Client) EscapeQuotes(s string) string {
 	return quoteEscaper.Replace(s)
+}
+
+// CreateSenderIdentity creates sender identity
+func (m *Client) CreateSenderIdentity(senderRequest model.SenderCreateRequest) (*model.SenderCreated, error) {
+	jsonData, _ := json.Marshal(senderRequest)
+	response, err := m.postJson("senderIdentities/create", jsonData)
+
+	defer response.Body.Close()
+	data := &model.SenderCreated{}
+	err = json.NewDecoder(response.Body).Decode(data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+// UpdateSenderIdentity
+func (m *Client) UpdateSenderIdentity(email string, senderRequest model.SenderUpdateRequest) error {
+	path := fmt.Sprintf("senderIdentities/update?email=%s", email)
+	jsonData, _ := json.Marshal(senderRequest)
+	response, err := m.postJson(path, jsonData)
+	defer response.Body.Close()
+	return err
+}
+
+// DeleteSenderIdentity
+func (m *Client) DeleteSenderIdentity(email string) error {
+	path := fmt.Sprintf("senderIdentities/delete?email=%s", email)
+	response, err := m.delete(path)
+	defer response.Body.Close()
+	return err
 }
