@@ -89,11 +89,12 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 
 // func TestVerifySenderIdentity(t *testing.T) {
 // 	client := Client{ClientID: clientID, Secret: secret}
-// 	isVerified, err := client.VerifySenderIdentity("minhthy01011991@gmail.com")
+// 	sender, isVerified, err := client.VerifySenderIdentity("minhthy01011991@gmail.com")
 // 	if err != nil {
 // 		log.Fatal(err)
 // 		return
 // 	}
+// 	fmt.Println(sender)
 // 	fmt.Println(isVerified)
 // }
 
