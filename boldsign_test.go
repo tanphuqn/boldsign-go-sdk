@@ -20,7 +20,7 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com", SignerOrder: 1})
 	var files []string
 	// files = append(files, "./test.pdf", "./download.png")
-	files = append(files, "./main.go")
+	files = append(files, "./test.pdf")
 	// files = append(files, "./download.png")
 	// files = append(files, "./Product Road Map.docx")
 

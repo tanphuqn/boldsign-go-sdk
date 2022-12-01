@@ -51,12 +51,12 @@ func (m *Client) GetToken() (string, error) {
 	}
 }
 
-func (m *Client) get(path string) (*http.Response, error) {
+func (m *Client) get(path string, isBeta bool) (*http.Response, error) {
 	token, err := m.GetToken()
 	if err != nil {
 		return nil, err
 	}
-	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(), path)
+	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(isBeta), path)
 
 	var b bytes.Buffer
 	request, _ := http.NewRequest(http.MethodGet, endpoint, &b)
@@ -73,25 +73,25 @@ func (m *Client) get(path string) (*http.Response, error) {
 	return response, err
 }
 
-func (m *Client) post(path string, params *bytes.Buffer, w multipart.Writer) (*http.Response, error) {
-	return m.request(http.MethodPost, path, params, w)
+func (m *Client) post(path string, params *bytes.Buffer, w multipart.Writer, isBeta bool) (*http.Response, error) {
+	return m.request(http.MethodPost, path, params, w, isBeta)
 }
 
-func (m *Client) delete(path string) (*http.Response, error) {
-	return m.requestJson(http.MethodDelete, path, nil)
+func (m *Client) delete(path string, isBeta bool) (*http.Response, error) {
+	return m.requestJson(http.MethodDelete, path, nil, isBeta)
 }
 
-func (m *Client) postJson(path string, jsonData []byte) (*http.Response, error) {
-	return m.requestJson(http.MethodPost, path, jsonData)
+func (m *Client) postJson(path string, jsonData []byte, isBeta bool) (*http.Response, error) {
+	return m.requestJson(http.MethodPost, path, jsonData, isBeta)
 }
 
-func (m *Client) requestJson(method string, path string, jsonData []byte) (*http.Response, error) {
+func (m *Client) requestJson(method string, path string, jsonData []byte, isBeta bool) (*http.Response, error) {
 	token, err := m.GetToken()
 	if err != nil {
 		return nil, err
 	}
 
-	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(), path)
+	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(isBeta), path)
 	request, _ := http.NewRequest(method, endpoint, bytes.NewBuffer(jsonData))
 
 	request.Header.Set("Content-Type", "application/json")
@@ -109,12 +109,12 @@ func (m *Client) requestJson(method string, path string, jsonData []byte) (*http
 	return response, err
 }
 
-func (m *Client) request(method string, path string, params *bytes.Buffer, w multipart.Writer) (*http.Response, error) {
+func (m *Client) request(method string, path string, params *bytes.Buffer, w multipart.Writer, isBeta bool) (*http.Response, error) {
 	token, err := m.GetToken()
 	if err != nil {
 		return nil, err
 	}
-	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(), path)
+	endpoint := fmt.Sprintf("%s%s", m.getEndpoint(isBeta), path)
 	request, _ := http.NewRequest(method, endpoint, params)
 	request.Header.Add("Content-Type", w.FormDataContentType())
 	request.Header.Add("Accept", "*/*")
@@ -141,8 +141,12 @@ func (m *Client) getError(response *http.Response) error {
 	return errors.New(fmt.Sprintf(`Error: %d`, response.StatusCode) + "-" + bodyString)
 }
 
-func (m *Client) getEndpoint() string {
+func (m *Client) getEndpoint(isBeta bool) string {
 	var url string
+	if isBeta {
+		return baseURLBeta
+	}
+
 	if m.BaseURL != "" {
 		url = m.BaseURL
 	} else {

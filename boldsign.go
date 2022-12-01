@@ -24,7 +24,8 @@ var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
 var extestion = ".pdf,.png,.jpg,.docx"
 
 const (
-	baseURL             string = "https://api-eu.boldsign.com/v1-beta/"
+	baseURL             string = "https://api-eu.boldsign.com/v1/"
+	baseURLBeta         string = "https://api-eu.boldsign.com/v1-beta/"
 	baseDomain          string = "https://account-eu.boldsign.com"
 	FormFieldKey        string = "form_field"
 	FileKey             string = "Files"
@@ -55,7 +56,7 @@ func (m *Client) CreateEmbeddedRequestUrl(req model.EmbeddedDocumentRequest) (*m
 		return nil, err
 	}
 
-	response, err := m.post("document/createEmbeddedRequestUrl", bodyBuf, *bodyWriter)
+	response, err := m.post("document/createEmbeddedRequestUrl", bodyBuf, *bodyWriter, false)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +79,7 @@ func (m *Client) GetEmbeddedSignLink(documentId string, signerEmail string, redi
 	if redirectUrl != "" {
 		path = fmt.Sprintf("%s&redirectUrl=%s", path, redirectUrl)
 	}
-	response, err := m.get(path)
+	response, err := m.get(path, false)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func (m *Client) GetEmbeddedSignLink(documentId string, signerEmail string, redi
 
 func (m *Client) GetProperties(documentId string) (*model.DocumentProperties, error) {
 	path := fmt.Sprintf("document/properties?documentId=%s", documentId)
-	response, err := m.get(path)
+	response, err := m.get(path, false)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (m *Client) GetProperties(documentId string) (*model.DocumentProperties, er
 
 func (m *Client) DownloadDocument(documentId string) ([]byte, error) {
 	path := fmt.Sprintf("document/download?documentId=%s", documentId)
-	response, err := m.get(path)
+	response, err := m.get(path, false)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +270,7 @@ func (m *Client) EscapeQuotes(s string) string {
 // CreateSenderIdentity creates sender identity
 func (m *Client) CreateSenderIdentity(senderRequest model.SenderCreateRequest) (*model.SenderCreated, error) {
 	jsonData, _ := json.Marshal(senderRequest)
-	response, err := m.postJson("senderIdentities/create", jsonData)
+	response, err := m.postJson("senderIdentities/create", jsonData, true)
 
 	defer response.Body.Close()
 	data := &model.SenderCreated{}
@@ -284,7 +285,7 @@ func (m *Client) CreateSenderIdentity(senderRequest model.SenderCreateRequest) (
 func (m *Client) UpdateSenderIdentity(email string, senderRequest model.SenderUpdateRequest) error {
 	path := fmt.Sprintf("senderIdentities/update?email=%s", email)
 	jsonData, _ := json.Marshal(senderRequest)
-	response, err := m.postJson(path, jsonData)
+	response, err := m.postJson(path, jsonData, true)
 	defer response.Body.Close()
 	return err
 }
@@ -292,7 +293,7 @@ func (m *Client) UpdateSenderIdentity(email string, senderRequest model.SenderUp
 // DeleteSenderIdentity
 func (m *Client) DeleteSenderIdentity(email string) error {
 	path := fmt.Sprintf("senderIdentities/delete?email=%s", email)
-	response, err := m.delete(path)
+	response, err := m.delete(path, true)
 	defer response.Body.Close()
 	return err
 }
@@ -300,7 +301,7 @@ func (m *Client) DeleteSenderIdentity(email string) error {
 // DeleteSenderIdentity
 func (m *Client) VerifySenderIdentity(email string) (bool, error) {
 	path := fmt.Sprintf("senderIdentities/list?PageSize=1&Page=1&Search=%s", email)
-	response, err := m.get(path)
+	response, err := m.get(path, true)
 
 	if err != nil {
 		return false, err
