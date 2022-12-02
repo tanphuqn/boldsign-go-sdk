@@ -107,8 +107,8 @@ func (m *Client) GetProperties(documentId string) (*model.DocumentProperties, er
 	return data, nil
 }
 
-func (m *Client) DownloadDocument(documentId string) ([]byte, error) {
-	path := fmt.Sprintf("document/download?documentId=%s", documentId)
+func (m *Client) DownloadDocument(documentId string, onBehalfOf string) ([]byte, error) {
+	path := fmt.Sprintf("document/download?documentId=%sonBehalfOf=%s", documentId, onBehalfOf)
 	response, err := m.get(path, false)
 	if err != nil {
 		return nil, err
