@@ -1,13 +1,14 @@
 package model
 
 type EmbeddedSendCreated struct {
-	DocumentId string `json:"documentId"`
-	SendUrl    string `json:"sendUrl"`
+	DocumentId string `json:"documentId,omitempty"`
+	SendUrl    string `json:"sendUrl,omitempty"`
 }
 
 type EmbeddedTemplateCreated struct {
-	TemplateId string `json:"templateId"`
-	CreateUrl  string `json:"createUrl"`
+	TemplateId string `json:"templateId,omitempty"`
+	CreateUrl  string `json:"createUrl,omitempty"`
+	EditUrl    string `json:"editUrl,omitempty"`
 }
 
 // GetDocumentId returns DocumentId
