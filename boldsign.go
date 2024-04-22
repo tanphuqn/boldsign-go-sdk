@@ -30,6 +30,7 @@ const (
 	FormFieldKey        string = "form_field"
 	FileKey             string = "Files"
 	SignersKey          string = "Signers"
+	RolesKey            string = "Roles"
 	ReminderSettingsKey string = "ReminderSettings"
 	ExpiryDaysKey       string = "ExpiryDays"
 )
@@ -136,6 +137,20 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 		switch val.Kind() {
 		case reflect.Slice:
 			switch fieldTag {
+			case RolesKey:
+				for i, role := range embRequest.GetRoles() {
+					formField, err := bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][name]", RolesKey, i))
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(role.GetName()))
+
+					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][index]", RolesKey, i))
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(strconv.Itoa(role.GetIndex())))
+				}
 			case SignersKey:
 				for i, signer := range embRequest.GetSigners() {
 					formField, err := bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][EmailAddress]", SignersKey, i))
@@ -319,4 +334,27 @@ func (m *Client) VerifySenderIdentity(email string) (model.SenderIdentityDetail,
 	}
 
 	return data.Result[0], data.Result[0].IsVerified(), nil
+}
+
+// CreateEmbeddedTemplateRequestUrl creates a new embedded signature with template id
+func (m *Client) CreateEmbeddedTemplateRequestUrl(req model.EmbeddedDocumentRequest) (*model.EmbeddedTemplateCreated, error) {
+	bodyBuf, bodyWriter, err := m.MarshalMultipartEmbeddedSignatureRequest(req)
+	if err != nil {
+		fmt.Println("marshalMultipartEmbeddedSignatureRequest Error:", err.Error())
+		return nil, err
+	}
+
+	response, err := m.post("template/createEmbeddedTemplateUrl", bodyBuf, *bodyWriter, false)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	data := &model.EmbeddedTemplateCreated{}
+	err = json.NewDecoder(response.Body).Decode(data)
+	if err != nil {
+		return nil, err
+	}
+	// fmt.Printf("%+v\n", data)
+	return data, nil
+
 }

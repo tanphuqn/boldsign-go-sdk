@@ -5,6 +5,11 @@ type EmbeddedSendCreated struct {
 	SendUrl    string `json:"sendUrl"`
 }
 
+type EmbeddedTemplateCreated struct {
+	TemplateId string `json:"templateId"`
+	CreateUrl  string `json:"createUrl"`
+}
+
 // GetDocumentId returns DocumentId
 func (e *EmbeddedSendCreated) GetDocumentId() string {
 	if e != nil {
@@ -17,6 +22,22 @@ func (e *EmbeddedSendCreated) GetDocumentId() string {
 func (e *EmbeddedSendCreated) GetSendUrl() string {
 	if e != nil {
 		return e.SendUrl
+	}
+	return ""
+}
+
+// GetTemplateId returns TemplateId
+func (e *EmbeddedTemplateCreated) GetTemplateId() string {
+	if e != nil {
+		return e.TemplateId
+	}
+	return ""
+}
+
+// GetCreateUrl returns CreateUrl
+func (e *EmbeddedTemplateCreated) GetCreateUrl() string {
+	if e != nil {
+		return e.CreateUrl
 	}
 	return ""
 }

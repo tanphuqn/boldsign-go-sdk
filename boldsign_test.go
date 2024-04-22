@@ -14,41 +14,41 @@ var brandId = ""
 
 // var documentId = ""
 
-func TestCreateEmbeddedRequestUrl(t *testing.T) {
+// func TestCreateEmbeddedRequestUrl(t *testing.T) {
 
-	var signers []model.DocumentSigner
-	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com", SignerOrder: 1})
-	var files []string
-	// files = append(files, "./test.pdf", "./download.png")
-	files = append(files, "./test.pdf")
-	// files = append(files, "./download.png")
-	// files = append(files, "./Product Road Map.docx")
+// 	var signers []model.DocumentSigner
+// 	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com", SignerOrder: 1})
+// 	var files []string
+// 	// files = append(files, "./test.pdf", "./download.png")
+// 	files = append(files, "./test.pdf")
+// 	// files = append(files, "./download.png")
+// 	// files = append(files, "./Product Road Map.docx")
 
-	client := Client{ClientID: clientID, Secret: secret}
-	request := model.EmbeddedDocumentRequest{
-		BrandId:               brandId,
-		Title:                 "Sent from API Curl 3",
-		Message:               "This is document message sent from API Curl",
-		Signers:               signers,
-		Files:                 files,
-		EnableSigningOrder:    true,
-		ShowToolbar:           true,
-		ShowSaveButton:        true,
-		ShowNavigationButtons: true,
-		ShowSendButton:        true,
-		ShowPreviewButton:     true,
-		DisableExpiryAlert:    true,
-		DisableEmails:         true,
-		//OnBehalfOf:            "minhthy01011991@gmail.com",
-	}
-	// fmt.Printf("%+v\n", request)
-	result, err := client.CreateEmbeddedRequestUrl(request)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	fmt.Println(result)
-}
+// 	client := Client{ClientID: clientID, Secret: secret}
+// 	request := model.EmbeddedDocumentRequest{
+// 		BrandId:               brandId,
+// 		Title:                 "Sent from API Curl 3",
+// 		Message:               "This is document message sent from API Curl",
+// 		Signers:               signers,
+// 		Files:                 files,
+// 		EnableSigningOrder:    true,
+// 		ShowToolbar:           true,
+// 		ShowSaveButton:        true,
+// 		ShowNavigationButtons: true,
+// 		ShowSendButton:        true,
+// 		ShowPreviewButton:     true,
+// 		DisableExpiryAlert:    true,
+// 		DisableEmails:         true,
+// 		OnBehalfOf:            "minhthy01011991@gmail.com",
+// 	}
+// 	// fmt.Printf("%+v\n", request)
+// 	result, err := client.CreateEmbeddedRequestUrl(request)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return
+// 	}
+// 	fmt.Println(result)
+// }
 
 // func TestCreateSenderIdentities(t *testing.T) {
 // 	client := Client{ClientID: clientID, Secret: secret}
@@ -135,3 +135,43 @@ func TestCreateEmbeddedRequestUrl(t *testing.T) {
 
 // 	fmt.Println(response)
 // }
+
+func TestCreateEmbeddedTemplateRequestUrl(t *testing.T) {
+
+	var roles []model.TemplateRole
+	roles = append(roles, model.TemplateRole{Name: "Manager", Index: 1})
+	var files []string
+	// files = append(files, "./test.pdf", "./download.png")
+	files = append(files, "./test.pdf")
+	// files = append(files, "./download.png")
+	// files = append(files, "./Product Road Map.docx")
+
+	client := Client{ClientID: clientID, Secret: secret}
+	request := model.EmbeddedDocumentRequest{
+		BrandId:               brandId,
+		Title:                 "API template",
+		Description:           "API template description",
+		DocumentTitle:         "API document title",
+		DocumentMessage:       "API document message description",
+		AllowMessageEditing:   true,
+		Roles:                 roles,
+		Files:                 files,
+		ShowToolbar:           true,
+		ShowSaveButton:        true,
+		ShowSendButton:        true,
+		ShowPreviewButton:     true,
+		ShowNavigationButtons: true,
+		ShowTooltip:           false,
+
+		AllowNewFiles:    true,
+		AllowModifyFiles: true,
+		ViewOption:       "PreparePage",
+	}
+	// fmt.Printf("%+v\n", request)
+	result, err := client.CreateEmbeddedTemplateRequestUrl(request)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Printf("%+v\n", result)
+}

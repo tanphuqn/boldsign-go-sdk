@@ -25,6 +25,18 @@ type EmbeddedDocumentRequest struct {
 	DisableEmails         bool             `form_field:"DisableEmails"`
 	ExpiryDays            int              `form_field:"ExpiryDays"`
 	ReminderSettings      ReminderSettings `form_field:"ReminderSettings"`
+
+	Description         string         `form_field:"Description"`
+	DocumentTitle       string         `form_field:"DocumentTitle"`
+	DocumentMessage     string         `form_field:"DocumentMessage"`
+	ViewOption          string         `form_field:"ViewOption"`
+	AllowNewFiles       bool           `form_field:"AllowNewFiles"`
+	AllowModifyFiles    bool           `form_field:"AllowModifyFiles"`
+	LinkValidTill       string         `form_field:"LinkValidTill"`
+	ShowTooltip         bool           `form_field:"ShowTooltip"`
+	AutoDetectFields    bool           `form_field:"autoDetectFields"`
+	AllowMessageEditing bool           `form_field:"AllowMessageEditing"`
+	Roles               []TemplateRole `form_field:"Roles"`
 }
 
 func (e *EmbeddedDocumentRequest) GetTitle() string {
@@ -81,6 +93,13 @@ func (e *EmbeddedDocumentRequest) GetFiles() []string {
 func (e *EmbeddedDocumentRequest) GetSigners() []DocumentSigner {
 	if e != nil {
 		return e.Signers
+	}
+	return nil
+}
+
+func (e *EmbeddedDocumentRequest) GetRoles() []TemplateRole {
+	if e != nil {
+		return e.Roles
 	}
 	return nil
 }
