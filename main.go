@@ -1,4 +1,4 @@
-package boldsign
+package main
 
 import (
 	"bytes"
@@ -12,19 +12,20 @@ import (
 )
 
 func main() {
-
 	url := "https://api-eu.boldsign.com/v1/document/createEmbeddedRequestUrl"
 	method := "POST"
-
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("Title", "Sent from API Curl 2222")
 	_ = writer.WriteField("Signers[0][Name]", "Signer Name 1")
 	_ = writer.WriteField("Signers[0][EmailAddress]", "tanphuqn@gmail.com")
-	file, errFile8 := os.Open("/Users/tanphuqn/Downloads/CV_Hoang Nguyen.pdf")
+	file, _ := os.Open("test.pdf")
 	defer file.Close()
-	part8,
-		errFile8 := writer.CreateFormFile("Files", filepath.Base("/Users/tanphuqn/Downloads/CV_Hoang Nguyen.pdf"))
+	part8, errFile8 := writer.CreateFormFile("Files", filepath.Base("test.pdf"))
+	if errFile8 != nil {
+		fmt.Println(errFile8)
+		return
+	}
 	_, errFile8 = io.Copy(part8, file)
 	if errFile8 != nil {
 		fmt.Println(errFile8)
