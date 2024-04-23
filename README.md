@@ -61,7 +61,7 @@ $ go test
 ## Tagging
 
 ```
-git tag v1.1.13
+git tag v1.1.15
 git push origin --tags
-GOPROXY=proxy.golang.org go list -m github.com/tanphuqn/boldsign-go-sdk@v1.1.13
+GOPROXY=proxy.golang.org go list -m github.com/tanphuqn/boldsign-go-sdk@v1.1.15
 ```
