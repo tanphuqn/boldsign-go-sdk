@@ -13,6 +13,7 @@ import (
 
 func main() {
 	url := "https://api-eu.boldsign.com/v1/document/createEmbeddedRequestUrl"
+	fmt.Println(url, "url")
 	method := "POST"
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
