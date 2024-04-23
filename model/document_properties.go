@@ -2,6 +2,7 @@ package model
 
 type DocumentProperties struct {
 	DocumentId          string                  `json:"documentId"`
+	TemplateId          string                  `json:"templateId"`
 	BrandId             string                  `json:"brandId"`
 	MessageTitle        string                  `json:"messageTitle"`
 	DocumentDescription string                  `json:"documentDescription"`

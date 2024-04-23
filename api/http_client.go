@@ -242,6 +242,30 @@ func (m *Client) MarshalMultipartEmbeddedSignatureRequest(embRequest model.Embed
 						return nil, nil, err
 					}
 					formField.Write([]byte(strconv.Itoa(role.GetIndex())))
+
+					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][defaultSignerName]", RolesKey, i))
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(role.GetDefaultSignerName()))
+
+					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][defaultSignerEmail]", RolesKey, i))
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(role.GetDefaultSignerEmail()))
+
+					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][signerOrder]", RolesKey, i))
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(strconv.Itoa(role.GetSignerOrder())))
+
+					formField, err = bodyWriter.CreateFormField(fmt.Sprintf("%s[%v][signerType]", RolesKey, i))
+					if err != nil {
+						return nil, nil, err
+					}
+					formField.Write([]byte(role.GetSignerType()))
 				}
 			case SignersKey:
 				for i, signer := range embRequest.GetSigners() {
