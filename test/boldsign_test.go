@@ -143,7 +143,7 @@ func TestCreateEmbeddedTemplateRequestUrl(t *testing.T) {
 	roles = append(roles, model.TemplateRole{Name: "Manager", Index: 1})
 	var files []string
 	// files = append(files, "./test.pdf", "./download.png")
-	files = append(files, "./test.pdf")
+	files = append(files, "../test.pdf")
 	// files = append(files, "./download.png")
 	// files = append(files, "./Product Road Map.docx")
 
@@ -199,4 +199,17 @@ func TestGetEmbeddedTemplateEditUrl(t *testing.T) {
 		return
 	}
 	fmt.Printf("%+v\n", result)
+}
+
+func TestDeleteTemplate(t *testing.T) {
+	client := boldsign.Client{ClientID: clientID, Secret: secret}
+	templateId := "35936dce-0722-48cc-84a5-c52ff47c1dd6"
+	// 35936dce-0722-48cc-84a5-c52ff47c1dd6
+	// fmt.Printf("%+v\n", request)
+	err := client.DeleteTemplate(templateId)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Println("Delete success")
 }

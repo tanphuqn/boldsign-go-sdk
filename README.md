@@ -61,7 +61,13 @@ $ go test
 ## Tagging
 
 ```
-git tag v1.1.16
+git tag v1.1.17
 git push origin --tags
-GOPROXY=proxy.golang.org go list -m github.com/tanphuqn/boldsign-go-sdk@v1.1.16
+GOPROXY=proxy.golang.org go list -m github.com/tanphuqn/boldsign-go-sdk@v1.1.17
 ```
+
+
+curl -X 'DELETE' \
+  'https://api.boldsign.com/v1/template/delete?templateId=35936dce-0722-48cc-84a5-c52ff47c1dd6' \
+  -H 'accept: */*' \
+  -H 'X-API-KEY: NzJhM2NmZjUtZDQxOS00MTM0LTgyNGUtNWJiMjUwYTRmOWQx'
