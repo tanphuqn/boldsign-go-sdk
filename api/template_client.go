@@ -79,7 +79,7 @@ func (m *Client) GetEmbeddedTemplateEditUrl(templateId string, req model.Embedde
 // DeleteTemplate
 func (m *Client) DeleteTemplate(templateId string) error {
 	path := fmt.Sprintf("template/delete?templateId=%s", templateId)
-	response, err := m.delete(path, true)
+	response, err := m.delete(path, false)
 	if err != nil {
 		return err
 	}
