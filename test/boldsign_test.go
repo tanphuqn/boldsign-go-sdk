@@ -9,11 +9,53 @@ import (
 	"github.com/tanphuqn/boldsign-go-sdk/model"
 )
 
-var clientID = "baa3163b-93bb-47dc-9e16-1697d090197f"
-var secret = "bb72eb4d-9aca-45cf-a16e-0774ec0c046f"
-var brandId = "99fe1fa8-3883-4286-a903-297ada4407f5"
+var clientID = ""
+var secret = ""
+var brandId = ""
 
 // var documentId = ""
+
+func TestMergeAndSend(t *testing.T) {
+	client := boldsign.Client{ClientID: clientID, Secret: secret}
+	var signers []model.DocumentSigner
+	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com", SignerOrder: 1})
+
+	var templateIds []string
+	templateIds = append(templateIds, "2d2115fe-e10d-461a-a71d-9196657afba9")
+	var roles []model.TemplateRole
+	roles = append(roles, model.TemplateRole{
+		RoleIndex:   1,
+		SignerName:  "SignerName1",
+		SignerEmail: "tanphuqn@gmail.com",
+		SignerOrder: 1,
+		SignerRole:  "Manager",
+		SignerType:  "Signer",
+	})
+	// 35936dce-0722-48cc-84a5-c52ff47c1dd6
+	request := model.EmbeddedDocumentRequest{
+		BrandId:            brandId,
+		Title:              "Sent from API Curl 1111",
+		Message:            "This is document message sent from API Curl",
+		Roles:              roles,
+		TemplateIds:        templateIds,
+		Signers:            signers,
+		DisableExpiryAlert: true,
+		DisableEmails:      false,
+		EnablePrintAndSign: true,
+		EnableReassign:     true,
+		EnableSigningOrder: true,
+		OnBehalfOf:         "minhthy01011991@gmail.com",
+	}
+
+	// fmt.Printf("%+v\n", request)
+	result, err := client.MergeAndSend(request)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Println("Delete success")
+	fmt.Println(result)
+}
 
 // func TestCreateEmbeddedRequestUrl(t *testing.T) {
 

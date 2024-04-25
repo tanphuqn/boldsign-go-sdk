@@ -7,12 +7,19 @@ import (
 )
 
 type TemplateRole struct {
-	Name               string `json:"name"`
-	Index              int    `json:"index"`
-	DefaultSignerName  string `json:"defaultSignerName"`
-	DefaultSignerEmail string `json:"defaultSignerEmail"`
-	SignerOrder        int    `json:"signerOrder"`
-	SignerType         string `json:"signerType"`
+	Name               string `json:"name,omitempty"`
+	Index              int    `json:"index,omitempty"`
+	DefaultSignerName  string `json:"defaultSignerName,omitempty"`
+	DefaultSignerEmail string `json:"defaultSignerEmail,omitempty"`
+	SignerOrder        int    `json:"signerOrder,omitempty"`
+	SignerType         string `json:"signerType,omitempty"`
+	RoleIndex          int    `json:"roleIndex,omitempty"`
+	SignerName         string `json:"SignerName,omitempty"`
+	SignerEmail        string `json:"SignerEmail,omitempty"`
+	PrivateMessage     string `json:"privateMessage,omitempty"`
+	AuthenticationCode string `json:"authenticationCode,omitempty"`
+	EnableEmailOTP     bool   `json:"enableEmailOTP,omitempty"`
+	SignerRole         string `json:"signerRole,omitempty"`
 }
 
 func (s *TemplateRole) GetName() string {

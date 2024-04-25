@@ -8,6 +8,22 @@ import (
 	"github.com/tanphuqn/boldsign-go-sdk/model"
 )
 
+// Send document using multiple templates
+func (m *Client) MergeAndSend(req model.EmbeddedDocumentRequest) (*model.EmbeddedSendCreated, error) {
+	jsonData, _ := json.Marshal(req)
+	response, err := m.postJson("template/mergeAndSend", jsonData, true)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	data := &model.EmbeddedSendCreated{}
+	err = json.NewDecoder(response.Body).Decode(data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 // CreateEmbeddedRequestUrl creates a new embedded signature
 func (m *Client) CreateEmbeddedRequestUrl(req model.EmbeddedDocumentRequest) (*model.EmbeddedSendCreated, error) {
 	bodyBuf, bodyWriter, err := m.MarshalMultipartEmbeddedSignatureRequest(req)

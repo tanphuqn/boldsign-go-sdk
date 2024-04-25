@@ -36,7 +36,8 @@ type EmbeddedDocumentRequest struct {
 	ShowTooltip         bool           `form_field:"ShowTooltip"`
 	AutoDetectFields    bool           `form_field:"autoDetectFields"`
 	AllowMessageEditing bool           `form_field:"AllowMessageEditing"`
-	Roles               []TemplateRole `form_field:"Roles"`
+	Roles               []TemplateRole `form_field:"Roles" json:"roles,omitempty"`
+	TemplateIds         []string       `form_field:"templateIds"`
 }
 
 func (e *EmbeddedDocumentRequest) GetTitle() string {
@@ -100,6 +101,13 @@ func (e *EmbeddedDocumentRequest) GetSigners() []DocumentSigner {
 func (e *EmbeddedDocumentRequest) GetRoles() []TemplateRole {
 	if e != nil {
 		return e.Roles
+	}
+	return nil
+}
+
+func (e *EmbeddedDocumentRequest) GetTemplateIds() []string {
+	if e != nil {
+		return e.TemplateIds
 	}
 	return nil
 }
