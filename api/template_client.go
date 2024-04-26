@@ -3,6 +3,7 @@ package boldsign
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/tanphuqn/boldsign-go-sdk/model"
 )
@@ -85,4 +86,50 @@ func (m *Client) DeleteTemplate(templateId string) error {
 	}
 	defer response.Body.Close()
 	return nil
+}
+
+// UpdateTemplate
+func (m *Client) UpdateTemplate(templateId string, req model.EmbeddedDocumentRequest) error {
+	path := fmt.Sprintf("template/edit?templateId=%s", templateId)
+	jsonData, _ := json.Marshal(req)
+	response, err := m.putJson(path, jsonData, true)
+	if err != nil {
+		return nil
+	}
+	defer response.Body.Close()
+	return err
+}
+
+// GetTemplate
+func (m *Client) GetTemplate(templateId string) (*model.DocumentProperties, error) {
+	template := &model.DocumentProperties{}
+	path := fmt.Sprintf("template/properties?templateId=%s", templateId)
+	response, err := m.get(path, true)
+	if err != nil {
+		return template, err
+	}
+
+	defer response.Body.Close()
+
+	err = json.NewDecoder(response.Body).Decode(template)
+	if err != nil {
+		return template, err
+	}
+
+	return template, nil
+}
+
+func (m *Client) DownloadTemplate(documentId string, onBehalfOf string) ([]byte, error) {
+	path := fmt.Sprintf("template/download?templateId=%s&onBehalfOf=%s", documentId, onBehalfOf)
+	response, err := m.get(path, false)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }

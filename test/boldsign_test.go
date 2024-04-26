@@ -2,6 +2,7 @@ package boldsign_test
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"testing"
 
@@ -17,11 +18,8 @@ var brandId = ""
 
 func TestMergeAndSend(t *testing.T) {
 	client := boldsign.Client{ClientID: clientID, Secret: secret}
-	var signers []model.DocumentSigner
-	signers = append(signers, model.DocumentSigner{Name: "SignerName1", EmailAddress: "tanphuqn@gmail.com", SignerOrder: 1})
-
 	var templateIds []string
-	templateIds = append(templateIds, "2d2115fe-e10d-461a-a71d-9196657afba9")
+	templateIds = append(templateIds, "0876f81f-3f81-4522-9379-6c644d969694")
 	var roles []model.TemplateRole
 	roles = append(roles, model.TemplateRole{
 		RoleIndex:   1,
@@ -38,7 +36,6 @@ func TestMergeAndSend(t *testing.T) {
 		Message:            "This is document message sent from API Curl",
 		Roles:              roles,
 		TemplateIds:        templateIds,
-		Signers:            signers,
 		DisableExpiryAlert: true,
 		DisableEmails:      false,
 		EnablePrintAndSign: true,
@@ -180,7 +177,6 @@ func TestMergeAndSend(t *testing.T) {
 // }
 
 func TestCreateEmbeddedTemplateRequestUrl(t *testing.T) {
-
 	var roles []model.TemplateRole
 	roles = append(roles, model.TemplateRole{Name: "Manager", Index: 1})
 	var files []string
@@ -254,4 +250,65 @@ func TestDeleteTemplate(t *testing.T) {
 		return
 	}
 	fmt.Println("Delete success")
+}
+
+func TestGetTemplate(t *testing.T) {
+	client := boldsign.Client{ClientID: clientID, Secret: secret}
+	templateId := "a59dd211-e44e-4287-ad9b-7432e83d6797"
+	template, err := client.GetTemplate(templateId)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Printf("%+v\n", template)
+}
+
+func TestUpdateTemplate(t *testing.T) {
+	client := boldsign.Client{ClientID: clientID, Secret: secret}
+	templateId := "a59dd211-e44e-4287-ad9b-7432e83d6797"
+	var roles []model.TemplateRole
+	roles = append(roles, model.TemplateRole{Name: "Manager", Index: 1})
+	request := model.EmbeddedDocumentRequest{
+		BrandId:               brandId,
+		Title:                 "API template update",
+		Description:           "API template description",
+		DocumentTitle:         "API document title",
+		DocumentMessage:       "API document message description",
+		AllowMessageEditing:   true,
+		Roles:                 roles,
+		ShowToolbar:           true,
+		ShowSaveButton:        true,
+		ShowSendButton:        true,
+		ShowPreviewButton:     true,
+		ShowNavigationButtons: true,
+		ShowTooltip:           false,
+
+		AllowNewFiles:    true,
+		AllowModifyFiles: true,
+	}
+	err := client.UpdateTemplate(templateId, request)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Println("Updated")
+}
+
+func TestDownloadTemplate(t *testing.T) {
+	client := boldsign.Client{ClientID: clientID, Secret: secret}
+	templateId := "a59dd211-e44e-4287-ad9b-7432e83d6797"
+	response, err := client.DownloadTemplate(templateId, "")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	fileName := templateId + ".pdf"
+	err = ioutil.WriteFile(fileName, response, 0644)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	fmt.Println(fileName)
 }

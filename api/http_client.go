@@ -122,6 +122,10 @@ func (m *Client) postJson(path string, jsonData []byte, isBeta bool) (*http.Resp
 	return m.requestJson(http.MethodPost, path, jsonData, isBeta)
 }
 
+func (m *Client) putJson(path string, jsonData []byte, isBeta bool) (*http.Response, error) {
+	return m.requestJson(http.MethodPut, path, jsonData, isBeta)
+}
+
 func (m *Client) requestJson(method string, path string, jsonData []byte, isBeta bool) (*http.Response, error) {
 	token, err := m.GetToken()
 	if err != nil {
